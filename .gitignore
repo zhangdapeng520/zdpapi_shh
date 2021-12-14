@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*mtest*
+paramiko1
+main*.py

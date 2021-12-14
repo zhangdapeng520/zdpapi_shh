@@ -1,16 +1,3 @@
-# zdpapi_shh
-python实现ssh操作，基于paramiko二次封装
-
-安装方式：
-```shell
-pip install zdpapi_ssh
-```
-
-## 一、快速入门
-
-### 1.1 建立连接
-paramiko方式
-```python
 import paramiko
 
 # 建立一个sshclient对象
@@ -31,9 +18,3 @@ print(stdout.read().decode())
 
 # 关闭连接
 ssh.close()
-```
-
-zdpapi_shh方式
-```python
-
-```
