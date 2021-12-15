@@ -41,3 +41,35 @@ ssh = SSH(hostname='192.168.18.11', port=22,
           username='zhangdapeng', password='zhangdapeng')
 ssh.execute('df -hl')
 ```
+
+### 1.2 建立多个ssh连接
+paramiko的方式
+```python
+import paramiko
+
+# 实例化一个transport对象
+trans = paramiko.Transport(('192.168.18.11', 22))
+
+# 建立连接
+trans.connect(username='zhangdapeng', password='zhangdapeng')
+
+# 将sshclient的对象的transport指定为以上的trans
+ssh = paramiko.SSHClient()
+ssh._transport = trans
+
+# 执行命令，和传统方法一样
+stdin, stdout, stderr = ssh.exec_command('df -hl')
+print(stdout.read().decode())
+
+# 关闭连接
+trans.close()
+```
+
+zdpapi_ssh的方式
+```python
+from zdpapi_ssh import SSH
+
+ssh = SSH(hostname='192.168.18.11', port=22,
+          username='zhangdapeng', password='zhangdapeng')
+ssh.execute_trans('192.168.18.11', 'df -hl')
+```
