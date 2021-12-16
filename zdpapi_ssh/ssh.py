@@ -66,8 +66,67 @@ class SSH:
         
         # 关闭连接
         self.ssh_trans.close()
+    
+    def __ftp_execute(self, hostname:str,  local_path:str, remote_path:str, execute:str):
+        """
+        使用FTP执行文件操作
         
+        local_path：本地路径
+        remote_path：远程路径
+        execute: 执行字符串，upload上传，download下载
+        """
+        # 获取配置信息
+        trans_dict = self.trans.get(hostname)
+        if trans_dict is None:
+            raise Exception("不存在该主机的trans配置")
+        
+        # 实例化一个trans对象
+        trans = paramiko.Transport(
+            (trans_dict.get("hostname"), 
+             trans_dict.get("port")))
 
+        # 建立连接
+        trans.connect(
+            username=trans_dict.get("username"), 
+            password=trans_dict.get("password"))
+
+        # 实例化一个 sftp对象,指定连接的通道
+        sftp = paramiko.SFTPClient.from_transport(trans)
+
+        if execute == "upload":
+            # 上传文件
+            sftp.put(localpath=local_path, remotepath=remote_path)
+        elif execute == "download": 
+            # 下载文件
+            sftp.get(localpath=local_path, remotepath=remote_path)
+        else:
+            raise Exception("不支持的操作，execute暂时只支持upload和download")
+
+        # 下载文件
+        trans.close()
+
+    def ftp_download(self, hostname: str,  local_path: str, remote_path: str):
+        """
+        FTP下载文件
+        
+        hostname: 主机地址
+        local_path：本地路径
+        remote_path：远程路径
+        """
+        self.__ftp_execute(hostname, local_path, remote_path, "download")
+    
+    def ftp_upload(self, hostname: str,  local_path: str, remote_path: str):
+        """
+        FTP上传文件
+        
+        hostname: 主机地址
+        local_path：本地路径
+        remote_path：远程路径
+        """
+        self.__ftp_execute(hostname, local_path, remote_path, "upload")
+    
+        
+        
     def connect(self):
         """
         建立连接
@@ -95,3 +154,4 @@ class SSH:
         关闭连接
         """
         self.ssh.close()
+        self.ssh_trans.close()

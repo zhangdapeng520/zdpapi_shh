@@ -43,6 +43,8 @@ ssh.execute('df -hl')
 ```
 
 ### 1.2 建立多个ssh连接
+方法1是传统的连接服务器、执行命令、关闭的一个操作，有时候需要登录上服务器执行多个操作，比如执行命令、上传/下载文件，方法1则无法实现，可以通过如下方式来操作
+
 paramiko的方式
 ```python
 import paramiko
@@ -72,4 +74,42 @@ from zdpapi_ssh import SSH
 ssh = SSH(hostname='192.168.18.11', port=22,
           username='zhangdapeng', password='zhangdapeng')
 ssh.execute_trans('192.168.18.11', 'df -hl')
+```
+
+## 二、FTP操作
+
+### 2.1 上传和下载
+paramiko实现
+```python
+import paramiko
+
+# 实例化一个trans对象# 实例化一个transport对象
+trans = paramiko.Transport(('192.168.18.11', 22))
+
+# 建立连接
+trans.connect(username='zhangdapeng', password='zhangdapeng')
+
+# 实例化一个 sftp对象,指定连接的通道
+sftp = paramiko.SFTPClient.from_transport(trans)
+
+# 发送文件
+sftp.put(localpath='README.md', remotepath='/home/zhangdapeng/README.md')
+
+# 下载文件
+# sftp.get(remotepath, localpath)
+trans.close()
+```
+
+zdpapi_ssh实现
+```python
+from zdpapi_ssh import SSH
+
+ssh = SSH(hostname='192.168.18.11', port=22,
+          username='zhangdapeng', password='zhangdapeng')
+
+# 上传
+ssh.ftp_upload('192.168.18.11', 'README.md', '/home/zhangdapeng/README1.md')
+
+# 下载
+ssh.ftp_download('192.168.18.11', 'README1.md', '/home/zhangdapeng/README1.md')
 ```
